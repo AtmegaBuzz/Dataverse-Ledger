@@ -1,0 +1,4 @@
+.updates-cli
+build
+*.test
+*.log
