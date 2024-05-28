@@ -7,7 +7,7 @@ package main
 import (
 	"os"
 
-	"dataverse/cmd/updates-cli/cmd"
+	"dataverse/cmd/dataverse-cli/cmd"
 
 	"github.com/ava-labs/hypersdk/utils"
 )
