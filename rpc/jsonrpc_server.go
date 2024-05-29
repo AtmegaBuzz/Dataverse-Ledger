@@ -4,6 +4,7 @@
 package rpc
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ava-labs/avalanchego/ids"
@@ -276,6 +277,7 @@ func (j *JSONRPCServer) MachineCID(req *http.Request, args *RegisterMachineCIDAr
 	defer span.End()
 
 	exists, update, err := j.c.GetMachineCID(ctx, args.MachineCIDID)
+	fmt.Println("lode2")
 
 	if err != nil {
 		return err

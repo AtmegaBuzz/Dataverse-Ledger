@@ -780,7 +780,7 @@ func SetMachineCID(
 
 	k := ProjectKey(machineCIDID)
 
-	v := make([]byte, MachineCIDChunks)
+	v := make([]byte, MachineCIDChunks+3)
 
 	copy(v[:MachineCIDChunks], machineCID[:])
 	fmt.Println("Machine successfully registered")
@@ -796,15 +796,17 @@ func GetMachineCID(
 	k := RegisterMachineCIDKey(machineCIDID)
 	v, errs := f(ctx, [][]byte{k})
 
-	if errors.Is(errs[0], database.ErrNotFound) {
-		return false, RegisterMachineCIDData{}, nil
-	}
-	if errs[0] != nil {
-		return false, RegisterMachineCIDData{}, nil
-	}
+	// if errors.Is(errs[0], database.ErrNotFound) {
+	// 	return false, RegisterMachineCIDData{}, nil
+	// }
+	// if errs[0] != nil {
+	// 	return false, RegisterMachineCIDData{}, nil
+	// }
+
+	// fmt.Println("lode1")
 
 	return true, RegisterMachineCIDData{
 		Key:        hex.EncodeToString(k),
-		MachineCID: v[0][:MachineCIDChunks],
+		MachineCID: v[0][:MachineCIDChunks+3],
 	}, errs[0]
 }

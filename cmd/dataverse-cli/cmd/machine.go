@@ -3,10 +3,8 @@ package cmd
 import (
 	"context"
 	"dataverse/actions"
-	"dataverse/consts"
 	"fmt"
 
-	"github.com/ava-labs/hypersdk/codec"
 	"github.com/spf13/cobra"
 )
 
@@ -70,9 +68,9 @@ var getregisterMachineCID = &cobra.Command{
 
 		ID, MachineCID, _ := tcli.MachineCID(ctx, id, false)
 
-		addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
+		// addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
 
-		fmt.Println("Id: ", addr, ", MachineCID: ", string(MachineCID))
+		fmt.Println("ID", ID, ", MachineCID: ", string(MachineCID))
 
 		return err
 

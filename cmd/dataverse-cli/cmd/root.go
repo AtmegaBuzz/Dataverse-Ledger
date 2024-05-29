@@ -57,6 +57,7 @@ func init() {
 		prometheusCmd,
 		deployCmd,
 		serverCmd,
+		machineCmd,
 	)
 	rootCmd.PersistentFlags().StringVar(
 		&dbPath,

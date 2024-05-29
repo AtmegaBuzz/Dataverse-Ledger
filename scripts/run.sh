@@ -95,7 +95,7 @@ fi
 ############################
 
 ############################
-echo "building updatesvm"
+echo "building Dataverse Ledger"
 
 # delete previous (if exists)
 rm -f ${TMPDIR}/avalanchego-${VERSION}/plugins/tHBYNu8ikqo4MWMHehC9iKB9mR5tB3DWzbkYmTfe9buWQ5GZ8
@@ -105,8 +105,8 @@ go build \
 -o ${TMPDIR}/avalanchego-${VERSION}/plugins/tHBYNu8ikqo4MWMHehC9iKB9mR5tB3DWzbkYmTfe9buWQ5GZ8 \
 ./cmd/dataverse
 
-echo "building updates-cli"
-go build -v -o ${TMPDIR}/updates-cli ./cmd/updates-cli
+echo "building dataverse-cli"
+go build -v -o ${TMPDIR}/dataverse-cli ./cmd/dataverse-cli
 
 # log everything in the avalanchego directory
 find ${TMPDIR}/avalanchego-${VERSION}
@@ -128,16 +128,16 @@ EOF
 GENESIS_PATH=$2
 if [[ -z "${GENESIS_PATH}" ]]; then
   echo "creating VM genesis file with allocations"
-  rm -f ${TMPDIR}/updates.genesis
-  ${TMPDIR}/updates-cli genesis generate ${TMPDIR}/allocations.json \
+  rm -f ${TMPDIR}/dataverse.genesis
+  ${TMPDIR}/dataverse-cli genesis generate ${TMPDIR}/allocations.json \
   --window-target-units ${WINDOW_TARGET_UNITS} \
   --max-block-units ${MAX_BLOCK_UNITS} \
   --min-block-gap ${MIN_BLOCK_GAP} \
-  --genesis-file ${TMPDIR}/updates.genesis
+  --genesis-file ${TMPDIR}/dataverse.genesis
 else
   echo "copying custom genesis file"
-  rm -f ${TMPDIR}/updates.genesis
-  cp ${GENESIS_PATH} ${TMPDIR}/updates.genesis
+  rm -f ${TMPDIR}/dataverse.genesis
+  cp ${GENESIS_PATH} ${TMPDIR}/dataverse.genesis
 fi
 
 ############################
@@ -148,9 +148,9 @@ fi
 # else malicious entities can attempt to stuff memory with dust orders to cause
 # an OOM.
 echo "creating vm config"
-rm -f ${TMPDIR}/updates.config
-rm -rf ${TMPDIR}/updates-e2e-profiles
-cat <<EOF > ${TMPDIR}/updates.config
+rm -f ${TMPDIR}/dataverse.config
+rm -rf ${TMPDIR}/dataverse-e2e-profiles
+cat <<EOF > ${TMPDIR}/dataverse.config
 {
   "mempoolSize": 10000000,
   "mempoolSponsorSize": 10000000,
@@ -163,19 +163,19 @@ cat <<EOF > ${TMPDIR}/updates.config
   "streamingBacklogSize": 10000000,
   "trackedPairs":["*"],
   "logLevel": "${LOGLEVEL}",
-  "continuousProfilerDir":"${TMPDIR}/updates-e2e-profiles/*",
+  "continuousProfilerDir":"${TMPDIR}/dataverse-e2e-profiles/*",
   "stateSyncServerDelay": ${STATESYNC_DELAY}
 }
 EOF
-mkdir -p ${TMPDIR}/updates-e2e-profiles
+mkdir -p ${TMPDIR}/dataverse-e2e-profiles
 
 ############################
 
 ############################
 
 echo "creating subnet config"
-rm -f ${TMPDIR}/updates.subnet
-cat <<EOF > ${TMPDIR}/updates.subnet
+rm -f ${TMPDIR}/dataverse.subnet
+cat <<EOF > ${TMPDIR}/dataverse.subnet
 {
   "proposerMinBlockDelay": 0,
   "proposerNumHistoricalBlocks": 50000
@@ -259,9 +259,9 @@ echo "running e2e tests"
 --network-runner-grpc-gateway-endpoint="0.0.0.0:12353" \
 --avalanchego-path=${AVALANCHEGO_PATH} \
 --avalanchego-plugin-dir=${AVALANCHEGO_PLUGIN_DIR} \
---vm-genesis-path=${TMPDIR}/updates.genesis \
---vm-config-path=${TMPDIR}/updates.config \
---subnet-config-path=${TMPDIR}/updates.subnet \
+--vm-genesis-path=${TMPDIR}/dataverse.genesis \
+--vm-config-path=${TMPDIR}/dataverse.config \
+--subnet-config-path=${TMPDIR}/dataverse.subnet \
 --output-path=${TMPDIR}/avalanchego-${VERSION}/output.yaml \
 --mode=${MODE}
 

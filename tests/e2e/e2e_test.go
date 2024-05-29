@@ -159,7 +159,7 @@ func init() {
 	flag.UintVar(
 		&numValidators,
 		"num-validators",
-		5,
+		1,
 		"number of validators per blockchain",
 	)
 }

@@ -57,13 +57,13 @@ func (c *RegisterMachine) Execute(
 	// It should only be possible to overwrite an existing asset if there is
 	// a hash collision.
 	if err := storage.SetMachineCID(ctx, mu, txID, c.MachineCID); err != nil {
-		return false, CreateAssetComputeUnits, utils.ErrBytes(err), nil, nil
+		return false, RegisterMachineComputeUnits, utils.ErrBytes(err), nil, nil
 	}
-	return true, CreateAssetComputeUnits, nil, nil, nil
+	return true, RegisterMachineComputeUnits, nil, nil, nil
 }
 
 func (*RegisterMachine) MaxComputeUnits(chain.Rules) uint64 {
-	return CreateAssetComputeUnits
+	return RegisterMachineComputeUnits
 }
 
 func (c *RegisterMachine) Size() int {
