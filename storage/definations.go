@@ -17,3 +17,8 @@ type UpdateData struct {
 	UpdateVersion        uint8  `json:"version"`
 	SuccessCount         uint8  `json:"success_count"`
 }
+
+type RegisterMachineCIDData struct {
+	Key        string `json:"key"`
+	MachineCID []byte `json:"machine_cid"`
+}

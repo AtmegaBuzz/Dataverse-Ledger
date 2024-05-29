@@ -29,20 +29,20 @@ elif [[ $# -eq 0 ]]; then
     name="tHBYNu8ikqo4MWMHehC9iKB9mR5tB3DWzbkYmTfe9buWQ5GZ8"
     BINARY_PATH=$HYPER_UPDATES_PATH/build/$name
 else
-    echo "Invalid arguments to build hyper updates. Requires zero (default location) or one argument to specify binary location."
+    echo "Invalid arguments to build Dataverse Ledger. Requires zero (default location) or one argument to specify binary location."
     exit 1
 fi
 
 cd $HYPER_UPDATES_PATH
 
-echo "Building Hyper Updates in $BINARY_PATH"
+echo "Building Dataverse Ledger in $BINARY_PATH"
 mkdir -p $(dirname $BINARY_PATH)
 go build -o $BINARY_PATH ./cmd/dataverse
 
-CLI_PATH=$HYPER_UPDATES_PATH/build/updates-cli
-echo "Building updates-cli in $CLI_PATH"
+CLI_PATH=$HYPER_UPDATES_PATH/build/dataverse-cli
+echo "Building dataverse-cli in $CLI_PATH"
 mkdir -p $(dirname $CLI_PATH)
-go build -o $CLI_PATH ./cmd/updates-cli
+go build -o $CLI_PATH ./cmd/dataverse-cli
 
 FAUCET_PATH=$HYPER_UPDATES_PATH/build/token-faucet
 echo "Building token-faucet in $FAUCET_PATH"

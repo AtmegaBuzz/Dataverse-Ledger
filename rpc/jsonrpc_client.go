@@ -284,3 +284,22 @@ func (cli *JSONRPCClient) Update(
 
 	return resp.ID, resp.ProjectTxID, resp.UpdateExecutableHash, resp.UpdateIPFSUrl, resp.ForDeviceName, resp.UpdateVersion, resp.SuccessCount, err
 }
+
+func (cli *JSONRPCClient) MachineCID(
+	ctx context.Context,
+	machineCIDID ids.ID,
+	useCache bool,
+) ([]byte, []byte, error) {
+
+	resp := new(RegisterMachineCIDReply)
+	err := cli.requester.SendRequest(
+		ctx,
+		"machineCID",
+		&RegisterMachineCIDArgs{
+			MachineCIDID: machineCIDID,
+		},
+		resp,
+	)
+
+	return resp.ID, resp.MachineCID, err
+}

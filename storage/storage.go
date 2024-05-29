@@ -762,7 +762,7 @@ func GetUpdateFromState(
 	}, errs[0]
 }
 
-// [projectPrefix] + [address]
+// [registerMachineCIDPrefix] + [address]
 func RegisterMachineCIDKey(machineCIDID ids.ID) (k []byte) {
 	k = make([]byte, 1+consts.IDLen+consts.Uint16Len)
 	k[0] = registerMachineCIDPrefix
@@ -782,9 +782,29 @@ func SetMachineCID(
 
 	v := make([]byte, MachineCIDChunks)
 
-	// saddr, _ := codec.AddressBech32(tconsts.HRP, owner)
-
 	copy(v[:MachineCIDChunks], machineCID[:])
 	fmt.Println("Machine successfully registered")
 	return mu.Insert(ctx, k, v)
+}
+
+func GetMachineCID(
+	ctx context.Context,
+	f ReadState,
+	machineCIDID ids.ID,
+) (bool, RegisterMachineCIDData, error) {
+
+	k := RegisterMachineCIDKey(machineCIDID)
+	v, errs := f(ctx, [][]byte{k})
+
+	if errors.Is(errs[0], database.ErrNotFound) {
+		return false, RegisterMachineCIDData{}, nil
+	}
+	if errs[0] != nil {
+		return false, RegisterMachineCIDData{}, nil
+	}
+
+	return true, RegisterMachineCIDData{
+		Key:        hex.EncodeToString(k),
+		MachineCID: v[0][:MachineCIDChunks],
+	}, errs[0]
 }

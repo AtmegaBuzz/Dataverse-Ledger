@@ -94,3 +94,11 @@ func (c *Controller) GetUpdateFromState(
 ) (bool, storage.UpdateData, error) {
 	return storage.GetUpdateFromState(ctx, c.inner.ReadState, update)
 }
+
+func (c *Controller) GetMachineCID(
+	ctx context.Context,
+	machinCIDID ids.ID,
+
+) (bool, storage.RegisterMachineCIDData, error) {
+	return storage.GetMachineCID(ctx, c.inner.ReadState, machinCIDID)
+}

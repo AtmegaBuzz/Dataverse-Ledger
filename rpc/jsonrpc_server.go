@@ -260,3 +260,33 @@ func (j *JSONRPCServer) Update(req *http.Request, args *UpdateArgs, reply *Updat
 	return err
 
 }
+
+type RegisterMachineCIDArgs struct {
+	MachineCIDID ids.ID `json:"machine_cid_id"`
+}
+
+type RegisterMachineCIDReply struct {
+	ID         []byte `json:"ID"`
+	MachineCID []byte `json:"machine_cid"`
+}
+
+func (j *JSONRPCServer) MachineCID(req *http.Request, args *RegisterMachineCIDArgs, reply *RegisterMachineCIDReply) error {
+
+	ctx, span := j.c.Tracer().Start(req.Context(), "Server.MachineCID")
+	defer span.End()
+
+	exists, update, err := j.c.GetMachineCID(ctx, args.MachineCIDID)
+
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrUpdateNotFound
+	}
+
+	reply.ID = []byte(update.Key)
+	reply.MachineCID = []byte(update.MachineCID)
+
+	return err
+
+}
