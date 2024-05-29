@@ -182,6 +182,10 @@ func handleTx(c *trpc.JSONRPCClient, tx *chain.Transaction, result *chain.Result
 			fmt.Sprintf("Update added with Update Id: %s for Project: %s", tx.ID(), action.ProjectTxID)
 			utils.Outf(summaryStr)
 
+		case *actions.RegisterMachine:
+			summaryStr += fmt.Sprintf("New Machine registered with tx: %s for Machine CID: %s", tx.ID(), action.MachineCID)
+			fmt.Sprintf("New Machine registered with tx: %s for Machine CID: %s", tx.ID(), action.MachineCID)
+			utils.Outf(summaryStr)
 		}
 	}
 	utils.Outf(

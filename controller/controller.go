@@ -214,6 +214,8 @@ func (c *Controller) Accepted(ctx context.Context, blk *chain.StatelessBlock) er
 				c.metrics.createProject.Inc()
 			case *actions.CreateUpdate:
 				c.metrics.createUpdate.Inc()
+			case *actions.RegisterMachine:
+				c.metrics.registerMachine.Inc()
 			}
 		}
 	}
