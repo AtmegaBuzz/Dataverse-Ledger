@@ -48,17 +48,18 @@ const (
 	txPrefix = 0x0
 
 	// stateDB
-	balancePrefix      = 0x0
-	assetPrefix        = 0x1
-	orderPrefix        = 0x2
-	loanPrefix         = 0x3
-	heightPrefix       = 0x4
-	timestampPrefix    = 0x5
-	feePrefix          = 0x6
-	incomingWarpPrefix = 0x7
-	outgoingWarpPrefix = 0x8
-	projectPrefix      = 0x9
-	updatePrefix       = 0xA
+	balancePrefix            = 0x0
+	assetPrefix              = 0x1
+	orderPrefix              = 0x2
+	loanPrefix               = 0x3
+	heightPrefix             = 0x4
+	timestampPrefix          = 0x5
+	feePrefix                = 0x6
+	incomingWarpPrefix       = 0x7
+	outgoingWarpPrefix       = 0x8
+	projectPrefix            = 0x9
+	updatePrefix             = 0xA
+	registerMachineCIDPrefix = 0xB
 )
 
 const (
@@ -78,6 +79,7 @@ const (
 	ForDeviceNameChunks           = 100
 	UpdateVersionUnitsChunks      = 1
 	SuccessCountUnitsChunks       = 1
+	MachineCIDChunks              = 100
 )
 
 var (
@@ -758,4 +760,31 @@ func GetUpdateFromState(
 		UpdateVersion:        v[0][ProjectTxIDChunks+UpdateExecutableHashChunks+UpdateExecutableIPFSUrlChunks+ForDeviceNameChunks],
 		SuccessCount:         v[0][ProjectTxIDChunks+UpdateExecutableHashChunks+UpdateExecutableIPFSUrlChunks+ForDeviceNameChunks+UpdateVersionUnitsChunks],
 	}, errs[0]
+}
+
+// [projectPrefix] + [address]
+func RegisterMachineCIDKey(machineCIDID ids.ID) (k []byte) {
+	k = make([]byte, 1+consts.IDLen+consts.Uint16Len)
+	k[0] = registerMachineCIDPrefix
+	copy(k[1:], machineCIDID[:])
+	binary.BigEndian.PutUint16(k[1+consts.IDLen:], MachineCIDChunks)
+	return
+}
+
+func SetMachineCID(
+	ctx context.Context,
+	mu state.Mutable,
+	machineCIDID ids.ID,
+	machineCID []byte,
+) error {
+
+	k := ProjectKey(machineCIDID)
+
+	v := make([]byte, MachineCIDChunks)
+
+	// saddr, _ := codec.AddressBech32(tconsts.HRP, owner)
+
+	copy(v[:MachineCIDChunks], machineCID[:])
+	fmt.Println("Machine successfully registered")
+	return mu.Insert(ctx, k, v)
 }

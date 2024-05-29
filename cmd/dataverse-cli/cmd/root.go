@@ -182,6 +182,10 @@ func init() {
 		startServer,
 	)
 
+	machineCmd.AddCommand(
+		registerMachineCID,
+	)
+
 	// spam
 	runSpamCmd.PersistentFlags().BoolVar(
 		&randomRecipient,

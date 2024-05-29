@@ -48,4 +48,6 @@ var (
 	OutputUpdateExecutableIPFSNotProvided = []byte("Update Executable IPFS url Not Provided")
 	OutputForDeviceNameNotProvided        = []byte("Update Device Name Not Provided")
 	OutputUpdateVersionNotProvided        = []byte("Update Version Not Provided")
+
+	OutputRegisterMachineNotProvided = []byte("Machine CID Not Provided")
 )

@@ -36,7 +36,7 @@ var registerMachineCID = &cobra.Command{
 			return err
 		}
 
-		project := &actions.CreateProject{
+		project := &actions.RegisterMachine{
 			MachineCID: []byte(machineCID),
 		}
 
