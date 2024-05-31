@@ -628,7 +628,7 @@ func ProjectKey(project ids.ID) (k []byte) {
 	k[0] = projectPrefix
 	copy(k[1:], project[:])
 	binary.BigEndian.PutUint16(k[1+consts.IDLen:], ProjectDescriptionChunks)
-	return
+	return k
 }
 
 func SetProject(
@@ -686,7 +686,7 @@ func UpdateKey(update ids.ID) (k []byte) {
 	k[0] = updatePrefix
 	copy(k[1:], update[:])
 	binary.BigEndian.PutUint16(k[1+consts.IDLen:], UpdateExecutableHashChunks)
-	return
+	return k
 }
 
 // ProjectTxID          []byte `json:"project_id"` // reference to Project
@@ -768,7 +768,7 @@ func RegisterMachineCIDKey(machineCIDID ids.ID) (k []byte) {
 	k[0] = registerMachineCIDPrefix
 	copy(k[1:], machineCIDID[:])
 	binary.BigEndian.PutUint16(k[1+consts.IDLen:], MachineCIDChunks)
-	return
+	return k
 }
 
 func SetMachineCID(
@@ -778,11 +778,11 @@ func SetMachineCID(
 	machineCID []byte,
 ) error {
 
-	k := ProjectKey(machineCIDID)
+	k := RegisterMachineCIDKey(machineCIDID)
 
 	v := make([]byte, MachineCIDChunks+3)
 
-	copy(v[:MachineCIDChunks], machineCID[:])
+	copy(v[:], machineCID[:])
 	fmt.Println("Machine successfully registered")
 	return mu.Insert(ctx, k, v)
 }
@@ -796,17 +796,17 @@ func GetMachineCID(
 	k := RegisterMachineCIDKey(machineCIDID)
 	v, errs := f(ctx, [][]byte{k})
 
-	// if errors.Is(errs[0], database.ErrNotFound) {
-	// 	return false, RegisterMachineCIDData{}, nil
-	// }
-	// if errs[0] != nil {
-	// 	return false, RegisterMachineCIDData{}, nil
-	// }
+	if errors.Is(errs[0], database.ErrNotFound) {
+		return false, RegisterMachineCIDData{}, nil
+	}
+	if errs[0] != nil {
+		return false, RegisterMachineCIDData{}, nil
+	}
 
 	// fmt.Println("lode1")
 
 	return true, RegisterMachineCIDData{
 		Key:        hex.EncodeToString(k),
-		MachineCID: v[0][:MachineCIDChunks+3],
+		MachineCID: v[0][:],
 	}, errs[0]
 }

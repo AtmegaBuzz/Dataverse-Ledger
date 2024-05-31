@@ -294,7 +294,7 @@ func (cli *JSONRPCClient) MachineCID(
 	resp := new(RegisterMachineCIDReply)
 	err := cli.requester.SendRequest(
 		ctx,
-		"MachineCID",
+		"machineCID",
 		&RegisterMachineCIDArgs{
 			MachineCIDID: machineCIDID,
 		},

@@ -58,13 +58,14 @@ var createRepoCmd = &cobra.Command{
 		}
 
 		// Generate transaction
-		_, id, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
+		tes, id, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
 
 		if err != nil {
 			fmt.Println("Error occured")
 		}
 
 		fmt.Println(id)
+		fmt.Println(tes)
 
 		return err
 

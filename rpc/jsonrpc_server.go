@@ -4,7 +4,6 @@
 package rpc
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ava-labs/avalanchego/ids"
@@ -263,7 +262,7 @@ func (j *JSONRPCServer) Update(req *http.Request, args *UpdateArgs, reply *Updat
 }
 
 type RegisterMachineCIDArgs struct {
-	MachineCIDID ids.ID `json:"machine_cid_id"`
+	MachineCIDID ids.ID `json:"MachineCID"`
 }
 
 type RegisterMachineCIDReply struct {
@@ -273,17 +272,16 @@ type RegisterMachineCIDReply struct {
 
 func (j *JSONRPCServer) MachineCID(req *http.Request, args *RegisterMachineCIDArgs, reply *RegisterMachineCIDReply) error {
 
-	ctx, span := j.c.Tracer().Start(req.Context(), "Server.MachineCID")
+	ctx, span := j.c.Tracer().Start(req.Context(), "Server.machineCID")
 	defer span.End()
 
 	exists, update, err := j.c.GetMachineCID(ctx, args.MachineCIDID)
-	fmt.Println("lode2")
 
 	if err != nil {
 		return err
 	}
 	if !exists {
-		return ErrUpdateNotFound
+		return ErrMachineCIDNotFound
 	}
 
 	reply.ID = []byte(update.Key)

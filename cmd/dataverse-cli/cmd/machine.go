@@ -3,8 +3,10 @@ package cmd
 import (
 	"context"
 	"dataverse/actions"
+	"dataverse/consts"
 	"fmt"
 
+	"github.com/ava-labs/hypersdk/codec"
 	"github.com/spf13/cobra"
 )
 
@@ -41,13 +43,14 @@ var registerMachineCID = &cobra.Command{
 		}
 
 		// Generate transaction
-		_, id, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
+		te, _, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
 
 		if err != nil {
 			fmt.Println("Error occured")
 		}
 
-		fmt.Println(id)
+		// fmt.Println(id)
+		fmt.Println(te)
 
 		return err
 
@@ -66,11 +69,15 @@ var getregisterMachineCID = &cobra.Command{
 
 		id, _ := handler.Root().PromptID("register machine txid")
 
-		ID, MachineCID, _ := tcli.MachineCID(ctx, id, false)
+		ID, MachineCID, err := tcli.MachineCID(ctx, id, false)
 
-		// addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
+		if err != nil {
+			return err
+		}
 
-		fmt.Println("ID", ID, ", MachineCID: ", string(MachineCID))
+		addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
+
+		fmt.Println("ID", addr, ", MachineCID: ", string(MachineCID))
 
 		return err
 
