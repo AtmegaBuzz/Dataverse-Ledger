@@ -59,7 +59,7 @@ func (c *NotarizeData) Execute(
 
 	// It should only be possible to overwrite an existing asset if there is
 	// a hash collision.
-	if err := storage.AttestMachine(ctx, mu, txID, c.MachineAddress, c.MachineCategory, c.MachineManufacturer, c.MachineCID); err != nil {
+	if err := storage.NotarizeData(ctx, mu, txID, c.MachineAttestTx, c.DataOwnerAddr, c.DataCID, c.DataType); err != nil {
 		return false, AttestMachineComputeUnits, utils.ErrBytes(err), nil, nil
 	}
 	return true, AttestMachineComputeUnits, nil, nil, nil

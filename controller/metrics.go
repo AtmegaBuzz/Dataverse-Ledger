@@ -29,6 +29,7 @@ type metrics struct {
 	createUpdate    prometheus.Counter
 	registerMachine prometheus.Counter
 	attestMachine   prometheus.Counter
+	notarizeData    prometheus.Counter
 }
 
 func newMetrics(gatherer ametrics.MultiGatherer) (*metrics, error) {
@@ -98,6 +99,11 @@ func newMetrics(gatherer ametrics.MultiGatherer) (*metrics, error) {
 			Name:      "attest_machine",
 			Help:      "no of attest machine",
 		}),
+		notarizeData: prometheus.NewCounter(prometheus.CounterOpts{
+			Namespace: "machine",
+			Name:      "notarize_data",
+			Help:      "no of notarized assets",
+		}),
 	}
 	r := prometheus.NewRegistry()
 	errs := wrappers.Errs{}
@@ -118,6 +124,7 @@ func newMetrics(gatherer ametrics.MultiGatherer) (*metrics, error) {
 		r.Register(m.createUpdate),
 		r.Register(m.registerMachine),
 		r.Register(m.attestMachine),
+		r.Register(m.notarizeData),
 		gatherer.Register(consts.Name, r),
 	)
 	return m, errs.Err
