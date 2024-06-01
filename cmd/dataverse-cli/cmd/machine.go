@@ -27,7 +27,7 @@ var registerMachineCID = &cobra.Command{
 			return err
 		}
 
-		machineCID, err := handler.Root().PromptString("Machine CID", 1, 256)
+		machineCID, err := handler.Root().PromptString("Machine CID", 66, 66)
 		if err != nil {
 			return err
 		}
@@ -78,6 +78,90 @@ var getregisterMachineCID = &cobra.Command{
 		addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
 
 		fmt.Println("ID", addr, ", MachineCID: ", string(MachineCID))
+
+		return err
+
+	},
+}
+
+var attestMachine = &cobra.Command{
+	Use: "attest-machine",
+	RunE: func(*cobra.Command, []string) error {
+
+		ctx := context.Background()
+		_, _, factory, cli, scli, tcli, err := handler.DefaultActor()
+		if err != nil {
+			return err
+		}
+
+		address, err := handler.Root().PromptString("Machine Address", 44, 44)
+		if err != nil {
+			return err
+		}
+
+		machine_category, err := handler.Root().PromptString("Machine Category", 1, 100)
+		if err != nil {
+			return err
+		}
+
+		machine_manufacturer, err := handler.Root().PromptString("Machine Manufacturer", 1, 100)
+		if err != nil {
+			return err
+		}
+
+		machineCID, err := handler.Root().PromptString("Machine CID", 66, 66)
+		if err != nil {
+			return err
+		}
+
+		// Confirm action
+		cont, err := handler.Root().PromptContinue()
+		if !cont || err != nil {
+			return err
+		}
+
+		project := &actions.AttestMachine{
+			MachineAddress:      []byte(address),
+			MachineCategory:     []byte(machine_category),
+			MachineManufacturer: []byte(machine_manufacturer),
+			MachineCID:          []byte(machineCID),
+		}
+
+		// Generate transaction
+		te, _, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
+
+		if err != nil {
+			fmt.Println("Error occured")
+		}
+
+		fmt.Println(te)
+
+		return err
+
+	},
+}
+
+var getAttestedachineCID = &cobra.Command{
+	Use: "get-attested-machine",
+	RunE: func(*cobra.Command, []string) error {
+
+		ctx := context.Background()
+		_, _, _, _, _, tcli, err := handler.DefaultActor()
+		if err != nil {
+			return err
+		}
+
+		id, _ := handler.Root().PromptID("attestation txid")
+
+		ID, MachineAddress, MachineCategory, MachineManufacturer, MachineCID, err := tcli.AttestMachine(ctx, id, false)
+
+		if err != nil {
+			return err
+		}
+
+		addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
+
+		fmt.Println("ID", addr, ", MachineAddress: ", string(MachineAddress), ", MachineCategory: ", string(MachineCategory), ", MachineManufacturer: ", string(MachineManufacturer), ", MachineCID: ", string(MachineCID))
 
 		return err
 

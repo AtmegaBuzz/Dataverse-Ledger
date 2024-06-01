@@ -37,4 +37,5 @@ type Controller interface {
 	GetProjectFromState(context.Context, ids.ID) (bool, storage.ProjectData, error)
 	GetUpdateFromState(context.Context, ids.ID) (bool, storage.UpdateData, error)
 	GetMachineCID(context.Context, ids.ID) (bool, storage.RegisterMachineCIDData, error)
+	GetAttestMachine(context.Context, ids.ID) (bool, storage.AttestMachineData, error)
 }

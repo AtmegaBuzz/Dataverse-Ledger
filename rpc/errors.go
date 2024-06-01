@@ -6,10 +6,11 @@ package rpc
 import "errors"
 
 var (
-	ErrTxNotFound         = errors.New("tx not found")
-	ErrAssetNotFound      = errors.New("asset not found")
-	ErrOrderNotFound      = errors.New("order not found")
-	ErrProjectNotFound    = errors.New("project not found")
-	ErrUpdateNotFound     = errors.New("update not found")
-	ErrMachineCIDNotFound = errors.New("machine cid not found")
+	ErrTxNotFound            = errors.New("tx not found")
+	ErrAssetNotFound         = errors.New("asset not found")
+	ErrOrderNotFound         = errors.New("order not found")
+	ErrProjectNotFound       = errors.New("project not found")
+	ErrUpdateNotFound        = errors.New("update not found")
+	ErrMachineCIDNotFound    = errors.New("machine cid not found")
+	ErrAttestMachineNotFound = errors.New("attested Machine not found")
 )

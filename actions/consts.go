@@ -17,6 +17,7 @@ const (
 	createProjectID      uint8 = 9
 	createUpdateID       uint8 = 10
 	registerMachineCIDID uint8 = 11
+	attestMachineID      uint8 = 12
 )
 
 const (
@@ -60,6 +61,11 @@ const (
 
 // Machine cid storage constants
 const (
-	MachineCIDUnits             = 100
+	MachineAddressUnits      = 44
+	MachineCategoryUnits     = 100
+	MachineManufacturerUnits = 100
+	MachineCIDUnits          = 66
+
 	RegisterMachineComputeUnits = 5
+	AttestMachineComputeUnits   = 5
 )

@@ -303,3 +303,22 @@ func (cli *JSONRPCClient) MachineCID(
 
 	return resp.ID, resp.MachineCID, err
 }
+
+func (cli *JSONRPCClient) AttestMachine(
+	ctx context.Context,
+	tx ids.ID,
+	useCache bool,
+) ([]byte, []byte, []byte, []byte, []byte, error) {
+
+	resp := new(AttestMachineReply)
+	err := cli.requester.SendRequest(
+		ctx,
+		"attestMachine",
+		&AttestMachineArgs{
+			Tx: tx,
+		},
+		resp,
+	)
+
+	return resp.ID, resp.MachineAddress, resp.MachineCategory, resp.MachineManufacturer, resp.MachineCID, err
+}

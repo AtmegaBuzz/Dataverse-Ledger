@@ -50,7 +50,7 @@ func (c *RegisterMachine) Execute(
 	_ bool,
 ) (bool, uint64, []byte, *warp.UnsignedMessage, error) {
 
-	if len(c.MachineCID) == 0 {
+	if len(c.MachineCID) != 66 {
 		return false, RegisterMachineComputeUnits, OutputRegisterMachineNotProvided, nil, nil
 	}
 

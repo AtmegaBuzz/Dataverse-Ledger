@@ -186,6 +186,8 @@ func init() {
 	machineCmd.AddCommand(
 		registerMachineCID,
 		getregisterMachineCID,
+		attestMachine,
+		getAttestedachineCID,
 	)
 
 	// spam

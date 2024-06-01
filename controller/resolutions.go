@@ -102,3 +102,11 @@ func (c *Controller) GetMachineCID(
 ) (bool, storage.RegisterMachineCIDData, error) {
 	return storage.GetMachineCID(ctx, c.inner.ReadState, machinCIDID)
 }
+
+func (c *Controller) GetAttestMachine(
+	ctx context.Context,
+	tx ids.ID,
+
+) (bool, storage.AttestMachineData, error) {
+	return storage.GetAttestMachine(ctx, c.inner.ReadState, tx)
+}

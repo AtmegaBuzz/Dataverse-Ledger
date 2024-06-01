@@ -22,3 +22,11 @@ type RegisterMachineCIDData struct {
 	Key        string `json:"key"`
 	MachineCID []byte `json:"machine_cid"`
 }
+
+type AttestMachineData struct {
+	Key                 string `json:"key"`
+	MachineAddress      []byte `json:"machine_address"`
+	MachineCategory     []byte `json:"machine_category"`
+	MachineManufacturer []byte `json:"machine_manufacturer"`
+	MachineCID          []byte `json:"machine_cid"`
+}

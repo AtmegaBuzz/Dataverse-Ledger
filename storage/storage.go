@@ -60,6 +60,7 @@ const (
 	projectPrefix            = 0x9
 	updatePrefix             = 0xA
 	registerMachineCIDPrefix = 0xB
+	attestMachineCIDPrefix   = 0xC
 )
 
 const (
@@ -79,7 +80,11 @@ const (
 	ForDeviceNameChunks           = 100
 	UpdateVersionUnitsChunks      = 1
 	SuccessCountUnitsChunks       = 1
-	MachineCIDChunks              = 100
+
+	MachineCIDChunks          = 67
+	MachineAddressChunks      = 45
+	MachineCategoryChunks     = 100
+	MachineManufacturerChunks = 100
 )
 
 var (
@@ -803,10 +808,73 @@ func GetMachineCID(
 		return false, RegisterMachineCIDData{}, nil
 	}
 
-	// fmt.Println("lode1")
-
 	return true, RegisterMachineCIDData{
 		Key:        hex.EncodeToString(k),
 		MachineCID: v[0][:],
+	}, errs[0]
+}
+
+// [attestMachineCIDPrefix] + [address]
+func AttestMachineKey(tx ids.ID) (k []byte) {
+	k = make([]byte, 1+consts.IDLen+consts.Uint16Len)
+	k[0] = attestMachineCIDPrefix
+	copy(k[1:], tx[:])
+	binary.BigEndian.PutUint16(k[1+consts.IDLen:], MachineCIDChunks)
+	return k
+}
+
+func AttestMachine(
+	ctx context.Context,
+	mu state.Mutable,
+	tx ids.ID,
+	address []byte,
+	category []byte,
+	manufacturer []byte,
+	MachineCID []byte,
+) error {
+
+	k := AttestMachineKey(tx)
+
+	v := make([]byte,
+		MachineCIDChunks+
+			MachineAddressChunks+
+			MachineCategoryChunks+
+			MachineManufacturerChunks)
+
+	// saddr, _ := codec.AddressBech32(tconsts.HRP, owner)
+
+	copy(v[:MachineCIDChunks], address[:])
+
+	copy(v[MachineCIDChunks:MachineCIDChunks+MachineAddressChunks], category[:])
+
+	copy(v[MachineCIDChunks+MachineAddressChunks:MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks], manufacturer[:])
+
+	copy(v[MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks:], MachineCID[:])
+
+	return mu.Insert(ctx, k, v)
+}
+
+func GetAttestMachine(
+	ctx context.Context,
+	f ReadState,
+	tx ids.ID,
+) (bool, AttestMachineData, error) {
+
+	k := AttestMachineKey(tx)
+	v, errs := f(ctx, [][]byte{k})
+
+	if errors.Is(errs[0], database.ErrNotFound) {
+		return false, AttestMachineData{}, nil
+	}
+	if errs[0] != nil {
+		return false, AttestMachineData{}, nil
+	}
+
+	return true, AttestMachineData{
+		Key:                 hex.EncodeToString(k),
+		MachineAddress:      v[0][:MachineCIDChunks],
+		MachineCategory:     v[0][MachineCIDChunks : MachineCIDChunks+MachineAddressChunks],
+		MachineManufacturer: v[0][MachineCIDChunks+MachineAddressChunks : MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks],
+		MachineCID:          v[0][MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks:],
 	}, errs[0]
 }

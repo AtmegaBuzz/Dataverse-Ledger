@@ -272,7 +272,7 @@ type RegisterMachineCIDReply struct {
 
 func (j *JSONRPCServer) MachineCID(req *http.Request, args *RegisterMachineCIDArgs, reply *RegisterMachineCIDReply) error {
 
-	ctx, span := j.c.Tracer().Start(req.Context(), "Server.machineCID")
+	ctx, span := j.c.Tracer().Start(req.Context(), "Server.MachineCID")
 	defer span.End()
 
 	exists, update, err := j.c.GetMachineCID(ctx, args.MachineCIDID)
@@ -286,6 +286,42 @@ func (j *JSONRPCServer) MachineCID(req *http.Request, args *RegisterMachineCIDAr
 
 	reply.ID = []byte(update.Key)
 	reply.MachineCID = []byte(update.MachineCID)
+
+	return err
+
+}
+
+type AttestMachineArgs struct {
+	Tx ids.ID `json:"Tx"`
+}
+
+type AttestMachineReply struct {
+	ID                  []byte `json:"ID"`
+	MachineAddress      []byte `json:"machine_address"`
+	MachineCategory     []byte `json:"machine_category"`
+	MachineManufacturer []byte `json:"machine_manufacturer"`
+	MachineCID          []byte `json:"machine_cid"`
+}
+
+func (j *JSONRPCServer) AttestMachine(req *http.Request, args *AttestMachineArgs, reply *AttestMachineReply) error {
+
+	ctx, span := j.c.Tracer().Start(req.Context(), "Server.AttestMachine")
+	defer span.End()
+
+	exists, attestmachine, err := j.c.GetAttestMachine(ctx, args.Tx)
+
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrAttestMachineNotFound
+	}
+
+	reply.ID = []byte(attestmachine.Key)
+	reply.MachineAddress = []byte(attestmachine.MachineAddress)
+	reply.MachineCategory = []byte(attestmachine.MachineCategory)
+	reply.MachineManufacturer = []byte(attestmachine.MachineManufacturer)
+	reply.MachineCID = []byte(attestmachine.MachineCID)
 
 	return err
 

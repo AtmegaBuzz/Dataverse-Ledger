@@ -49,5 +49,10 @@ var (
 	OutputForDeviceNameNotProvided        = []byte("Update Device Name Not Provided")
 	OutputUpdateVersionNotProvided        = []byte("Update Version Not Provided")
 
-	OutputRegisterMachineNotProvided = []byte("Machine CID Not Provided")
+	OutputRegisterMachineNotProvided = []byte("Invalid Machine CID")
+
+	OutputInvalidMachineAddressLen      = []byte("Invalid Machine Address, address should be of length 44")
+	OutputInvalidMachineCategoryLen     = []byte("Category should not exceed len 100")
+	OutputInvalidMachineManufacturerLen = []byte("Manufacturer should not exceed len 100")
+	OutputInvalidMachineCIDLen          = []byte("Invalid Machine CID, CID should be of length 66")
 )
