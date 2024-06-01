@@ -4,8 +4,10 @@ import (
 	"context"
 	"dataverse/actions"
 	"dataverse/consts"
+	"dataverse/storage"
 	"fmt"
 
+	"github.com/ava-labs/avalanchego/ids"
 	"github.com/ava-labs/hypersdk/codec"
 	"github.com/spf13/cobra"
 )
@@ -189,11 +191,8 @@ var notarizeData = &cobra.Command{
 		}
 
 		notarizeType := "/dataverse.asset.MsgNotarizedAsset"
-		if err != nil {
-			return err
-		}
 
-		dataCid, err := handler.Root().PromptString("Data CID", 66, 66)
+		dataCid, err := handler.Root().PromptString("Data CID", 59, 59)
 		if err != nil {
 			return err
 		}
@@ -204,11 +203,11 @@ var notarizeData = &cobra.Command{
 			return err
 		}
 
-		project := &actions.AttestMachine{
-			MachineAddress:      []byte(address),
-			MachineCategory:     []byte(machine_category),
-			MachineManufacturer: []byte(machine_manufacturer),
-			MachineCID:          []byte(machineCID),
+		project := &actions.NotarizeData{
+			MachineAttestTx: storage.NotarizeDataKey(attestationTx),
+			DataCID:         []byte(dataCid),
+			DataType:        []byte(notarizeType),
+			DataOwnerAddr:   []byte(creator),
 		}
 
 		// Generate transaction
@@ -219,6 +218,33 @@ var notarizeData = &cobra.Command{
 		}
 
 		fmt.Println(te)
+
+		return err
+
+	},
+}
+
+var getNotarizeData = &cobra.Command{
+	Use: "get-notarize-data",
+	RunE: func(*cobra.Command, []string) error {
+
+		ctx := context.Background()
+		_, _, _, _, _, tcli, err := handler.DefaultActor()
+		if err != nil {
+			return err
+		}
+
+		id, _ := handler.Root().PromptID("notarized txid")
+
+		ID, MachineAttestTx, DataCID, DataType, DataOwnerAddr, err := tcli.NotarizeData(ctx, id, false)
+
+		if err != nil {
+			return err
+		}
+
+		addr, err := codec.AddressBech32(consts.HRP, codec.Address(ID))
+
+		fmt.Println("ID", addr, ", MachineAttestTx: ", ids.ID(MachineAttestTx), ", DataCID: ", string(DataCID), ", DataType: ", string(DataType), ", DataOwnerAddr: ", string(DataOwnerAddr))
 
 		return err
 

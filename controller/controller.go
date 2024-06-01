@@ -218,6 +218,8 @@ func (c *Controller) Accepted(ctx context.Context, blk *chain.StatelessBlock) er
 				c.metrics.registerMachine.Inc()
 			case *actions.AttestMachine:
 				c.metrics.attestMachine.Inc()
+			case *actions.NotarizeData:
+				c.metrics.attestMachine.Inc()
 			}
 		}
 	}

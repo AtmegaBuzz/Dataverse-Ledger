@@ -188,6 +188,8 @@ func init() {
 		getregisterMachineCID,
 		attestMachine,
 		getAttestedachineCID,
+		notarizeData,
+		getNotarizeData,
 	)
 
 	// spam

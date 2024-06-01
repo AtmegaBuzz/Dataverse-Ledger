@@ -174,17 +174,22 @@ func handleTx(c *trpc.JSONRPCClient, tx *chain.Transaction, result *chain.Result
 
 		case *actions.CreateProject:
 			summaryStr += fmt.Sprintf("Project added successfullt | Project Id: %s Project Name: %s", tx.ID(), action.ProjectName)
-			fmt.Sprintf("Project Id: %s Project Name: %s", tx.ID(), action.ProjectName)
 			utils.Outf(summaryStr)
 
 		case *actions.CreateUpdate:
 			summaryStr += fmt.Sprintf("Update added with Update Id: %s for Project: %s", tx.ID(), action.ProjectTxID)
-			fmt.Sprintf("Update added with Update Id: %s for Project: %s", tx.ID(), action.ProjectTxID)
 			utils.Outf(summaryStr)
 
 		case *actions.RegisterMachine:
 			summaryStr += fmt.Sprintf("New Machine registered with tx: %s for Machine CID: %s", tx.ID(), action.MachineCID)
-			fmt.Sprintf("New Machine registered with tx: %s for Machine CID: %s", tx.ID(), action.MachineCID)
+			utils.Outf(summaryStr)
+
+		case *actions.AttestMachine:
+			summaryStr += fmt.Sprintf("New Machine attested with tx: %s for Machine address: %s", tx.ID(), action.MachineAddress)
+			utils.Outf(summaryStr)
+
+		case *actions.NotarizeData:
+			summaryStr += fmt.Sprintf("Data Notarized with tx: %s for Data CID: %s", tx.ID(), action.DataCID)
 			utils.Outf(summaryStr)
 		}
 	}

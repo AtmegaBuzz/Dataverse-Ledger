@@ -31,7 +31,7 @@ func (*NotarizeData) GetTypeID() uint8 {
 
 func (*NotarizeData) StateKeys(_ chain.Auth, txID ids.ID) []string {
 	return []string{
-		string(storage.AttestMachineKey(txID)),
+		string(storage.NotarizeDataKey(txID)),
 	}
 }
 

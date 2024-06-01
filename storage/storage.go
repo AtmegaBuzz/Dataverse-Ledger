@@ -931,7 +931,7 @@ func GetNotarizeData(
 	tx ids.ID,
 ) (bool, NotarizeDataData, error) {
 
-	k := AttestMachineKey(tx)
+	k := NotarizeDataKey(tx)
 	v, errs := f(ctx, [][]byte{k})
 
 	if errors.Is(errs[0], database.ErrNotFound) {
