@@ -110,3 +110,11 @@ func (c *Controller) GetAttestMachine(
 ) (bool, storage.AttestMachineData, error) {
 	return storage.GetAttestMachine(ctx, c.inner.ReadState, tx)
 }
+
+func (c *Controller) GetNotarizeData(
+	ctx context.Context,
+	tx ids.ID,
+
+) (bool, storage.NotarizeDataData, error) {
+	return storage.GetNotarizeData(ctx, c.inner.ReadState, tx)
+}

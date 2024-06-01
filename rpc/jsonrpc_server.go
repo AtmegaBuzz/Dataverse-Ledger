@@ -326,3 +326,39 @@ func (j *JSONRPCServer) AttestMachine(req *http.Request, args *AttestMachineArgs
 	return err
 
 }
+
+type NotarizeDataArgs struct {
+	Tx ids.ID `json:"Tx"`
+}
+
+type NotarizeDataReply struct {
+	ID              []byte `json:"ID"`
+	AttestMachineTx []byte `json:"attest_machine_tx"`
+	DataOwnerAddr   []byte `json:"data_owner_address"`
+	DataCID         []byte `json:"data_cid"`
+	DataType        []byte `json:"data_type"`
+}
+
+func (j *JSONRPCServer) NotarizeData(req *http.Request, args *NotarizeDataArgs, reply *NotarizeDataReply) error {
+
+	ctx, span := j.c.Tracer().Start(req.Context(), "Server.NotarizeData")
+	defer span.End()
+
+	exists, notarizeddata, err := j.c.GetNotarizeData(ctx, args.Tx)
+
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrNotarizedDataNotFound
+	}
+
+	reply.ID = []byte(notarizeddata.Key)
+	reply.AttestMachineTx = []byte(notarizeddata.AttestMachineTx)
+	reply.DataOwnerAddr = []byte(notarizeddata.DataOwnerAddr)
+	reply.DataCID = []byte(notarizeddata.DataCID)
+	reply.DataType = []byte(notarizeddata.DataType)
+
+	return err
+
+}

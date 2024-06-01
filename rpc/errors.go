@@ -13,4 +13,5 @@ var (
 	ErrUpdateNotFound        = errors.New("update not found")
 	ErrMachineCIDNotFound    = errors.New("machine cid not found")
 	ErrAttestMachineNotFound = errors.New("attested Machine not found")
+	ErrNotarizedDataNotFound = errors.New("Invalid Notarized Data")
 )

@@ -38,4 +38,5 @@ type Controller interface {
 	GetUpdateFromState(context.Context, ids.ID) (bool, storage.UpdateData, error)
 	GetMachineCID(context.Context, ids.ID) (bool, storage.RegisterMachineCIDData, error)
 	GetAttestMachine(context.Context, ids.ID) (bool, storage.AttestMachineData, error)
+	GetNotarizeData(context.Context, ids.ID) (bool, storage.NotarizeDataData, error)
 }

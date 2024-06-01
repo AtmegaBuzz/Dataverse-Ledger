@@ -322,3 +322,22 @@ func (cli *JSONRPCClient) AttestMachine(
 
 	return resp.ID, resp.MachineAddress, resp.MachineCategory, resp.MachineManufacturer, resp.MachineCID, err
 }
+
+func (cli *JSONRPCClient) NotarizeData(
+	ctx context.Context,
+	tx ids.ID,
+	useCache bool,
+) ([]byte, []byte, []byte, []byte, []byte, error) {
+
+	resp := new(NotarizeDataReply)
+	err := cli.requester.SendRequest(
+		ctx,
+		"notarizeData",
+		&NotarizeDataArgs{
+			Tx: tx,
+		},
+		resp,
+	)
+
+	return resp.ID, resp.AttestMachineTx, resp.DataOwnerAddr, resp.DataCID, resp.DataType, err
+}
