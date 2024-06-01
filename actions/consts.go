@@ -18,6 +18,7 @@ const (
 	createUpdateID       uint8 = 10
 	registerMachineCIDID uint8 = 11
 	attestMachineID      uint8 = 12
+	notarizeDataID       uint8 = 13
 )
 
 const (
@@ -68,4 +69,13 @@ const (
 
 	RegisterMachineComputeUnits = 5
 	AttestMachineComputeUnits   = 5
+)
+
+// data storage constants
+const (
+	MachineAttestTxUnits     = 49
+	DataOwnerAddrUnits       = 44
+	DataCIDUnits             = 60
+	DataTypeUnits            = 36
+	NotarizeDataComputeUnits = 5
 )

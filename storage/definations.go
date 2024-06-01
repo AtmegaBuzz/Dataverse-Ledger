@@ -30,3 +30,11 @@ type AttestMachineData struct {
 	MachineManufacturer []byte `json:"machine_manufacturer"`
 	MachineCID          []byte `json:"machine_cid"`
 }
+
+type NotarizeDataData struct {
+	Key             string `json:"key"`
+	AttestMachineTx []byte `json:"attest_machine_tx"`
+	DataOwnerAddr   []byte `json:"data_owner_address"`
+	DataCID         []byte `json:"data_cid"`
+	DataType        []byte `json:"data_type"`
+}

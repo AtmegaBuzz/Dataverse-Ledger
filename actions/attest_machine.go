@@ -16,7 +16,7 @@ import (
 	"github.com/ava-labs/hypersdk/utils"
 )
 
-var _ chain.Action = (*RegisterMachine)(nil)
+var _ chain.Action = (*AttestMachine)(nil)
 
 type AttestMachine struct {
 	MachineAddress      []byte `json:"machine_address"`

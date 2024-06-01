@@ -61,6 +61,7 @@ const (
 	updatePrefix             = 0xA
 	registerMachineCIDPrefix = 0xB
 	attestMachineCIDPrefix   = 0xC
+	notarizeDataPrefix       = 0xD
 )
 
 const (
@@ -85,6 +86,11 @@ const (
 	MachineAddressChunks      = 45
 	MachineCategoryChunks     = 100
 	MachineManufacturerChunks = 100
+
+	DataCIDChunks         = 60
+	DataTypeChunks        = 36
+	DataOwnerAddrChunks   = 45
+	AttestMachineTxChunks = 49
 )
 
 var (
@@ -876,5 +882,70 @@ func GetAttestMachine(
 		MachineCategory:     v[0][MachineCIDChunks : MachineCIDChunks+MachineAddressChunks],
 		MachineManufacturer: v[0][MachineCIDChunks+MachineAddressChunks : MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks],
 		MachineCID:          v[0][MachineCIDChunks+MachineAddressChunks+MachineCategoryChunks:],
+	}, errs[0]
+}
+
+// [notarizeDataPrefix] + [address]
+func NotarizeDataKey(tx ids.ID) (k []byte) {
+	k = make([]byte, 1+consts.IDLen+consts.Uint16Len)
+	k[0] = notarizeDataPrefix
+	copy(k[1:], tx[:])
+	binary.BigEndian.PutUint16(k[1+consts.IDLen:], DataCIDChunks)
+	return k
+}
+
+func NotarizeData(
+	ctx context.Context,
+	mu state.Mutable,
+	tx ids.ID,
+	attestMachineTx []byte,
+	dataOwnerAddr []byte,
+	dataCID []byte,
+	dataType []byte,
+) error {
+
+	k := NotarizeDataKey(tx)
+
+	v := make([]byte,
+		AttestMachineTxChunks+
+			DataOwnerAddrChunks+
+			DataCIDChunks+
+			DataTypeChunks)
+
+	// saddr, _ := codec.AddressBech32(tconsts.HRP, owner)
+
+	copy(v[:AttestMachineTxChunks], attestMachineTx[:])
+
+	copy(v[AttestMachineTxChunks:AttestMachineTxChunks+DataOwnerAddrChunks], dataOwnerAddr[:])
+
+	copy(v[AttestMachineTxChunks+DataOwnerAddrChunks:AttestMachineTxChunks+DataOwnerAddrChunks+DataCIDChunks], dataCID[:])
+
+	copy(v[AttestMachineTxChunks+DataOwnerAddrChunks+DataCIDChunks:], dataType[:])
+
+	return mu.Insert(ctx, k, v)
+}
+
+func GetNotarizeData(
+	ctx context.Context,
+	f ReadState,
+	tx ids.ID,
+) (bool, NotarizeDataData, error) {
+
+	k := AttestMachineKey(tx)
+	v, errs := f(ctx, [][]byte{k})
+
+	if errors.Is(errs[0], database.ErrNotFound) {
+		return false, NotarizeDataData{}, nil
+	}
+	if errs[0] != nil {
+		return false, NotarizeDataData{}, nil
+	}
+
+	return true, NotarizeDataData{
+		Key:             hex.EncodeToString(k),
+		AttestMachineTx: v[0][:AttestMachineTxChunks],
+		DataOwnerAddr:   v[0][AttestMachineTxChunks : AttestMachineTxChunks+DataOwnerAddrChunks],
+		DataCID:         v[0][AttestMachineTxChunks+DataOwnerAddrChunks : AttestMachineTxChunks+DataOwnerAddrChunks+DataCIDChunks],
+		DataType:        v[0][AttestMachineTxChunks+DataOwnerAddrChunks+DataCIDChunks:],
 	}, errs[0]
 }

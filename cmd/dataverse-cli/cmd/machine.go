@@ -167,3 +167,60 @@ var getAttestedachineCID = &cobra.Command{
 
 	},
 }
+
+var notarizeData = &cobra.Command{
+	Use: "notarize",
+	RunE: func(*cobra.Command, []string) error {
+
+		ctx := context.Background()
+		_, _, factory, cli, scli, tcli, err := handler.DefaultActor()
+		if err != nil {
+			return err
+		}
+
+		attestationTx, err := handler.Root().PromptID("attestation txid")
+		if err != nil {
+			return err
+		}
+
+		creator, err := handler.Root().PromptString("Machine Address", 44, 44)
+		if err != nil {
+			return err
+		}
+
+		notarizeType := "/dataverse.asset.MsgNotarizedAsset"
+		if err != nil {
+			return err
+		}
+
+		dataCid, err := handler.Root().PromptString("Data CID", 66, 66)
+		if err != nil {
+			return err
+		}
+
+		// Confirm action
+		cont, err := handler.Root().PromptContinue()
+		if !cont || err != nil {
+			return err
+		}
+
+		project := &actions.AttestMachine{
+			MachineAddress:      []byte(address),
+			MachineCategory:     []byte(machine_category),
+			MachineManufacturer: []byte(machine_manufacturer),
+			MachineCID:          []byte(machineCID),
+		}
+
+		// Generate transaction
+		te, _, err := sendAndWait(ctx, nil, project, cli, scli, tcli, factory, true)
+
+		if err != nil {
+			fmt.Println("Error occured")
+		}
+
+		fmt.Println(te)
+
+		return err
+
+	},
+}
