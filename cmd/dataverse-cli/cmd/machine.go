@@ -236,7 +236,7 @@ var getNotarizeData = &cobra.Command{
 
 		id, _ := handler.Root().PromptID("notarized txid")
 
-		ID, MachineAttestTx, DataCID, DataType, DataOwnerAddr, err := tcli.NotarizeData(ctx, id, false)
+		ID, MachineAttestTx, DataOwnerAddr, DataCID, DataType, err := tcli.NotarizeData(ctx, id, false)
 
 		if err != nil {
 			return err

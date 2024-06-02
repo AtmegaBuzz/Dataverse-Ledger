@@ -190,6 +190,7 @@ func init() {
 		getAttestedachineCID,
 		notarizeData,
 		getNotarizeData,
+		serverDataverseCmd,
 	)
 
 	// spam
