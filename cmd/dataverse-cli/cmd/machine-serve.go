@@ -8,9 +8,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"github.com/multiformats/go-multibase"
+	mh "github.com/multiformats/go-multihash"
 )
 
 type RegisteredMachine struct {
@@ -130,10 +134,11 @@ func AttestMachine(ctx context.Context) http.HandlerFunc {
 		}
 
 		// check if tx exists onchain
+		var exists bool
 		var registerMachine RegisteredMachine
-		result := DB.Where("machine_c_id = ?", attestMachine.MachineCID).First(&registerMachine)
+		_ = DB.Model(registerMachine).Select("count(*) > 0").Where("machine_c_id = ?", attestMachine.MachineCID).Find(&exists).Error
 
-		if result.Error != nil {
+		if !exists {
 			http.Error(w, "Machine not registered", http.StatusBadRequest)
 			return
 		}
@@ -171,6 +176,7 @@ func AttestMachine(ctx context.Context) http.HandlerFunc {
 type NotarizeDataArgs struct {
 	Owner   string `json:"machine_address"`
 	DataCid string `json:"data_cid"`
+	Data    string `json:"data"`
 }
 
 func NotarizeDataView(ctx context.Context) http.HandlerFunc {
@@ -193,21 +199,21 @@ func NotarizeDataView(ctx context.Context) http.HandlerFunc {
 		}
 
 		// check if tx exists onchain
-		var exists bool
+		// var exists bool
 		var attestedMachineDB AttestedMachine
-		_ = DB.Model(attestedMachineDB).Select("count(*) > 0").Where("machine_address = ?", attestMachine.Owner).Find(&exists).Error
-		fmt.Println(exists)
-		if !exists {
-			http.Error(w, "Machine not registered", http.StatusBadRequest)
-			return
-		}
+		// _ = DB.Model(attestedMachineDB).Select("count(*) > 0").Where("machine_address = ?", attestMachine.Owner).Find(&exists).Error
+		// fmt.Println(exists)
+		// if !exists {
+		// 	http.Error(w, "Machine not registered", http.StatusBadRequest)
+		// 	return
+		// }
 
-		_ = DB.Where("machine_address = ?", attestMachine.Owner).First(&attestedMachineDB)
+		_ = DB.First(&attestedMachineDB, "machine_address = ?", attestMachine.Owner)
 
-		fmt.Println(attestedMachineDB.Txid, attestedMachineDB.MachineAddress)
+		fmt.Println(attestedMachineDB.Txid, attestMachine.Owner)
 
 		notarizedata := &actions.NotarizeData{
-			MachineAttestTx: []byte(attestedMachineDB.Txid),
+			MachineAttestTx: []byte("plmnt1qh05ghszrxfh8taksfqhvyfgewleq6u5ru9xlg"),
 			DataCID:         []byte(attestMachine.DataCid),
 			DataType:        []byte("/dataverse.asset.MsgNotarizedAsset"),
 			DataOwnerAddr:   []byte(attestMachine.Owner),
@@ -238,6 +244,51 @@ func NotarizeDataView(ctx context.Context) http.HandlerFunc {
 
 }
 
+type VerifyNotarizeDataArgs struct {
+	Owner string `json:"machine_address"`
+	Data  string `json:"data"`
+}
+
+func VerifyNotarizeDataView(ctx context.Context) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		body, err := io.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusBadRequest)
+			return
+		}
+
+		var verifyArgs VerifyNotarizeDataArgs
+		if err := json.Unmarshal(body, &verifyArgs); err != nil {
+			http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+			return
+		}
+
+		bytes := []byte(verifyArgs.Data)
+		hash, _ := mh.Sum(bytes, mh.SHA2_256, -1)
+
+		c := cid.NewCidV1(cid.Raw, hash)
+		encodedCID, _ := c.StringOfBase(multibase.Base32)
+
+		fmt.Println(encodedCID)
+
+		var exists bool
+		var notarizeData NotarizeData
+		_ = DB.Model(&notarizeData).Select("count(*) > 0").Where("data_cid = ?", encodedCID).Find(&exists).Error
+
+		response := exists
+
+		w.Header().Set("Content-Type", "application/json")
+
+		// w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+
+	}
+
+}
+
 var serverDataverseCmd = &cobra.Command{
 	Use: "serveDataverse",
 	RunE: func(*cobra.Command, []string) error {
@@ -257,16 +308,17 @@ var serverDataverseCmd = &cobra.Command{
 		http.HandleFunc("/get-register-machine", GetregisterMachineCID(ctx))
 		http.HandleFunc("/attest-machine", AttestMachine(ctx))
 		http.HandleFunc("/notarize-data", NotarizeDataView(ctx))
+		http.HandleFunc("/verify", VerifyNotarizeDataView(ctx))
 
 		// Start the HTTP server on port 8080
 		fmt.Println("Server is listening on port 8080...")
-		err_http := http.ListenAndServe(":8080", nil)
-		fmt.Println("Server Ended")
+		// err_http := http.ListenAndServe(":8080", nil)
+		// fmt.Println("Server Ended")
 
-		if err_http != nil {
-			return err_http
-		}
+		// if err_http != nil {
+		// 	return err_http
+		// }
 
-		return err_http
+		return http.ListenAndServe(":8080", nil)
 	},
 }
